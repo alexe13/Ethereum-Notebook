@@ -5,27 +5,26 @@ contract Notebook {
 
     address owner;
 
-//basic structure for users authentificated to view and edit notes
-    struct TrustedUser {
-    bytes32 name;
-    address addr;
+
+    //mappings for addresses with two levels of access
+    mapping (address => bool) readOnlyRegistry;
+    mapping (address => bool) fullAccessRegistry;
+
+    function isReadOnlyUser(address _addr) constant returns (bool) {
+        return readOnlyRegistry[_addr];
     }
 
-//mapping to check if address is trusted
-    mapping (address => bool) isReadOnlyUser;
-    mapping (address => bool) isFullAccessUser;
+    function isFullAccessUser(address _addr) constant returns (bool) {
+        return fullAccessRegistry[_addr];
+    }
 
-
-    //list of trusted users with two levels of access
-    TrustedUser[] readOnlyUsers;
-    TrustedUser[] fullAccessUsers;
 
     //modifier restriction for read only users
     modifier readOnly(address _addr) {
         if (_addr == owner) {
             _;
         }
-        else if (isReadOnlyUser[_addr]) {
+        else if (isReadOnlyUser(_addr)) {
             _;
         }
         else throw;
@@ -36,10 +35,36 @@ contract Notebook {
         if (_addr == owner) {
             _;
         }
-        else if (isFullAccessUser[_addr]) {
+        else if (isFullAccessUser(_addr)) {
             _;
         }
         else throw;
+    }
+
+    //add address eligible for read operations
+    function addReadOnlyUser(address _addr) fullAccess(msg.sender) {
+
+        readOnlyRegistry[_addr] = true;
+    }
+
+    //add address eligible for all operations
+    function addFullAccessUser(address _addr) fullAccess(msg.sender) {
+
+        readOnlyRegistry[_addr] = true;
+        fullAccessRegistry[_addr] = true;
+    }
+
+
+    function checkUser(address _addr) constant returns (string result) {
+
+        if (isFullAccessUser(_addr)) {
+            return "Full Access";
+        }
+        else if (isReadOnlyUser(_addr)) {
+            return "Read Only";
+        }
+        else return "This user has no access";
+
     }
 
 
@@ -61,6 +86,8 @@ contract Notebook {
 
     uint numberOfNotes = 0;
 
+    //---------CRUD operations with notes----------
+
     function addNote(string text) fullAccess(msg.sender) returns (bool success)  {
         notes.push(Note(text, numberOfNotes));
         numberOfNotes = notes.length;
@@ -68,12 +95,13 @@ contract Notebook {
     }
 
     function deleteNote(uint index) fullAccess(msg.sender) returns (bool success) {
-        if (index < 0 || index >= notes.length) return;
+        if (index < 0 || index >= notes.length) return false;
 
-        for (uint i = index; i < notes.length; i++) {
+        for (uint i = index; i < notes.length-1; i++) {
             notes[i] = notes[i+1];
         }
 
+        delete notes[notes.length-1];
         notes.length--;
         return true;
 
@@ -81,48 +109,16 @@ contract Notebook {
     }
 
     function editNote(uint index, string text) fullAccess(msg.sender) returns (bool success) {
-        if (index < 0 || index >= notes.length) return;
+        if (index < 0 || index >= notes.length) return false;
 
         notes[index].value = text;
+        return true;
     }
 
     function getNote(uint index) readOnly(msg.sender) constant returns (string, uint) {
+        if (index < 0 || index >= notes.length) throw;
         Note thisNote = notes[index];
         return (thisNote.value, thisNote.id);
-    }
-
-    function addReadOnlyUser(bytes32 _name, address _addr) fullAccess(msg.sender) {
-        TrustedUser memory newUser;
-
-        newUser.name = _name;
-        newUser.addr = _addr;
-
-        readOnlyUsers.push(newUser);
-        isReadOnlyUser[_addr] = true;
-    }
-
-    function addFullAccessUser(bytes32 _name, address _addr) fullAccess(msg.sender) {
-        TrustedUser memory newUser;
-
-        newUser.name = _name;
-        newUser.addr = _addr;
-
-        readOnlyUsers.push(newUser);
-        fullAccessUsers.push(newUser);
-        isReadOnlyUser[_addr] = true;
-        isFullAccessUser[_addr] = true;
-    }
-
-    function checkTrustedUser(address _addr) constant returns (bytes result) {
-
-        if (isReadOnlyUser[_addr]) {
-            return "Read Only";
-        }
-        else if (isFullAccessUser[_addr]) {
-            return "Full Access";
-        }
-        else return "This user has no access";
-
     }
 
 }

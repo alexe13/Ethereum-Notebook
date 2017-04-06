@@ -71,6 +71,7 @@ contract Notebook {
     //set owner in a constructor
     function Notebook() {
         owner = msg.sender;
+        notes.push(Note("All systems go!", 0));
     }
 
 
@@ -87,6 +88,10 @@ contract Notebook {
     uint numberOfNotes = 0;
 
     //---------CRUD operations with notes----------
+
+    function getNumberOfNotes() readOnly(msg.sender) constant returns(uint number) {
+        return notes.length;
+    }
 
     function addNote(string text) fullAccess(msg.sender) returns (bool success)  {
         notes.push(Note(text, numberOfNotes));
@@ -122,3 +127,4 @@ contract Notebook {
     }
 
 }
+

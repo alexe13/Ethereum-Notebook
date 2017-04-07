@@ -4,6 +4,7 @@ pragma solidity ^0.4.2;
 contract Notebook {
 
     address owner;
+    uint numberOfNotes;
 
 
     //mappings for addresses with two levels of access
@@ -72,12 +73,13 @@ contract Notebook {
     function Notebook() {
         owner = msg.sender;
         notes.push(Note("All systems go!", 0));
+        numberOfNotes = notes.length;
     }
 
 
     //basic structure for notes
     struct Note {
-    string value;
+    bytes32 value;
     uint id;
     }
 
@@ -85,7 +87,7 @@ contract Notebook {
     //our list of notes
     Note[] notes;
 
-    uint numberOfNotes = 0;
+    
 
     //---------CRUD operations with notes----------
 
@@ -93,7 +95,7 @@ contract Notebook {
         return notes.length;
     }
 
-    function addNote(string text) fullAccess(msg.sender) returns (bool success)  {
+    function addNote(bytes32 text) fullAccess(msg.sender) returns (bool success)  {
         notes.push(Note(text, numberOfNotes));
         numberOfNotes = notes.length;
         return true;
@@ -113,18 +115,28 @@ contract Notebook {
         if (notes.length < 0) notes.length = 0;
     }
 
-    function editNote(uint index, string text) fullAccess(msg.sender) returns (bool success) {
+    function editNote(uint index, bytes32 text) fullAccess(msg.sender) returns (bool success) {
         if (index < 0 || index >= notes.length) return false;
 
         notes[index].value = text;
         return true;
     }
 
-    function getNote(uint index) readOnly(msg.sender) constant returns (string, uint) {
-        if (index < 0 || index >= notes.length) throw;
-        Note thisNote = notes[index];
-        return (thisNote.value, thisNote.id);
+    function getAllNotes() constant returns(bytes32[], uint[]) {
+    uint length = notes.length;
+
+    bytes32[] memory values = new bytes32[](length);
+    uint[] memory ids = new uint[](length);
+
+    for (uint i = 0; i < length; i++) {
+      Note memory currentNote;
+      currentNote = notes[i];
+
+      values[i] = currentNote.value;
+      ids[i] = currentNote.id;
     }
 
-}
+    return (values, ids);
+  }
 
+}

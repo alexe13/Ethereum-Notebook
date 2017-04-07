@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Записная книжка в сети Ethereum</title>
+    <meta charset="UTF-8">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href="./app.css" rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="./app.js"></script>
+</head>
+<body>
+<h1 align="center">Записная книжка в сети Ethereum</h1>
+<br><h2 align="center">Добавьте запись:</h2></br>
+
+<div style="text-align: center"><textarea class="form-control" rows="3" id="note_text" placeholder="Ваш текст здесь"></textarea></div>
+<br><button class="btn btn-default" id="addNote" onclick="App.addNote()">Добавить запись</button>
+
+<p><h2>Открыть доступ для адреса:</h2></p>
+<div><input type="text" class="form-control" placeholder="Адрес сети Ethereum, например 0x93e66d9baea28c17d9fc393b53e3fbdd76899dae"></div><br>
+<form class="form-inline">
+    <button type="submit" class="btn btn-default">Разрешить чтение</button>
+    <button type="submit" class="btn btn-default">Разрешить чтение и изменение</button>
+    <button type="submit" class="btn btn-default">Проверить права адреса</button>
+</form>
+
+
+<br>
+<h2>Список ваших записей:</h2>
+<br>
+<span id="status"></span>
+<br><br>
+<br><br>
+
+<br><br>
+</body>
+</html>

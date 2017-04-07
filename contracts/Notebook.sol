@@ -4,8 +4,6 @@ pragma solidity ^0.4.2;
 contract Notebook {
 
     address owner;
-    uint numberOfNotes;
-
 
     //mappings for addresses with two levels of access
     mapping (address => bool) readOnlyRegistry;
@@ -72,32 +70,23 @@ contract Notebook {
     //set owner in a constructor
     function Notebook() {
         owner = msg.sender;
-        notes.push(Note("All systems go!", 0));
-        numberOfNotes = notes.length;
     }
 
-
-    //basic structure for notes
-    struct Note {
-    bytes32 value;
-    uint id;
-    }
 
 
     //our list of notes
-    Note[] notes;
+    bytes32[] notes;
 
     
 
     //---------CRUD operations with notes----------
-
-    function getNumberOfNotes() readOnly(msg.sender) constant returns(uint number) {
+    
+    function getNumberOfNotes() readOnly(msg.sender) constant returns (uint){
         return notes.length;
     }
 
     function addNote(bytes32 text) fullAccess(msg.sender) returns (bool success)  {
-        notes.push(Note(text, numberOfNotes));
-        numberOfNotes = notes.length;
+        notes.push(text);
         return true;
     }
 
@@ -118,25 +107,12 @@ contract Notebook {
     function editNote(uint index, bytes32 text) fullAccess(msg.sender) returns (bool success) {
         if (index < 0 || index >= notes.length) return false;
 
-        notes[index].value = text;
+        notes[index] = text;
         return true;
     }
 
-    function getAllNotes() constant returns(bytes32[], uint[]) {
-    uint length = notes.length;
-
-    bytes32[] memory values = new bytes32[](length);
-    uint[] memory ids = new uint[](length);
-
-    for (uint i = 0; i < length; i++) {
-      Note memory currentNote;
-      currentNote = notes[i];
-
-      values[i] = currentNote.value;
-      ids[i] = currentNote.id;
-    }
-
-    return (values, ids);
+    function getAllNotes() readOnly(msg.sender) constant returns(bytes32[]) {
+        return notes;
   }
 
 }

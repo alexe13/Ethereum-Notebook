@@ -36,26 +36,22 @@ window.App = {
   },
 
    showNotes: function(message) {
-    var self = this;
-    var status = document.getElementById("status");
-    status.innerHTML = "";
-    var texts = [];
-    var ids = [];
-
-    for (var i = 0; i < message.length; i++) {
-      if (i ==0 || i % 2 == 0) {
-        texts.push(message[i]);
-      }
-      else {
-        ids.push(message[i]);
-      }
+     console.log('show notes: ' + message);
+     var self = this;
+     var status = document.getElementById("status");
+    if (message[0] === "" || message.length == 0) {
+      status.innerHTML = "";
     }
-    console.log(texts);
-    console.log(ids);
+    else
+     {
+       status.innerHTML = "";
+       var texts = [];
 
-    for (var i = 0; i < texts.length; i++) {
-      status.innerHTML += self.createNotesHtml(texts[i], ids[i]);
-    }
+       for (var i = 0; i < message.length; i++) {
+         console.log('appending html on index ' + i);
+         status.innerHTML += self.createNotesHtml(message[i], i);
+       }
+     }
   },
 
   refreshNotes : function() {
@@ -66,13 +62,12 @@ window.App = {
         return instance.getAllNotes()
       })
       .then(function(data) {
-        var values = String(data[0]).split(',');
-        var ids = String(data[1]).split(',');
+        console.log('raw data:' + data);
+        var values = String(data).split(',');
         var tableRows = [];
 
         for (var i = 0; i < values.length; i++) {
           tableRows.push(web3.toAscii(values[i]));
-          tableRows.push(ids[i]);
         }
         self.showNotes(
           tableRows
@@ -96,6 +91,7 @@ window.App = {
   deleteNote : function(index) {
     var self = this;
 
+    console.log('deleting note ' + index);
     Notebook.deployed().then(function(instance) {
       return instance.deleteNote(index, {from:account});
     }).then(function() {
@@ -108,6 +104,7 @@ window.App = {
   editNote : function(index, text) {
     var self = this;
 
+    console.log('editing note ' + index);
     Notebook.deployed().then(function(instance) {
       return instance.editNote(index, text, {from:account});
     }).then(function() {

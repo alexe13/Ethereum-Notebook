@@ -13,10 +13,8 @@ window.App = {
   start: function() {
     var self = this;
 
-    // Bootstrap the MetaCoin abstraction for Use.
     Notebook.setProvider(web3.currentProvider);
 
-    // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function(err, accs) {
       if (err != null) {
         alert("There was an error fetching your accounts.");
@@ -135,6 +133,64 @@ window.App = {
     +   "</p>"
     + "</div>";
     return notesHtml;
+  },
+
+  grantReadOnly : function() {
+    var text = document.getElementById("input_address").value;
+    var status = document.getElementById("check_status")
+
+    if (text === "") {
+      status.innerText = 'Введен пустой адрес';
+    }
+    else {
+      Notebook.deployed().then(function (instance) {
+        status.innerText = "Ждем ответа от блокчейна..."
+        return instance.addReadOnlyUser(text, {from: account});
+      }).then(function () {
+        status.innerText = "Адрес добавлен!";
+      }).catch(function (e) {
+        console.log(e);
+      });
+    }
+  },
+
+  grantFullAccess : function() {
+    var text = document.getElementById("input_address").value;
+    var status = document.getElementById("check_status")
+
+    if (text === "") {
+      status.innerText = 'Введен пустой адрес';
+    }
+    else {
+      Notebook.deployed().then(function (instance) {
+        status.innerText = "Ждем ответа от блокчейна..."
+        return instance.addFullAccessUser(text, {from: account});
+      }).then(function () {
+        status.innerText = "Адрес добавлен!";
+      }).catch(function (e) {
+        console.log(e);
+      });
+    }
+  },
+
+  checkUserStatus : function() {
+    var addr = document.getElementById("input_address").value;
+    var status = document.getElementById("check_status")
+
+    if (addr === "") {
+      status.innerText = 'Введен пустой адрес';
+    }
+    else {
+      console.log(addr);
+      Notebook.deployed().then(function (instance) {
+        return instance.checkUser.call(addr, {from: account});
+      }).then(function (value) {
+        status.innerText = value.toLocaleString();
+        console.log(value.toLocaleString());
+      }).catch(function (e) {
+        console.log(e);
+      });
+    }
   },
 };
 

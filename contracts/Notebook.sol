@@ -6,8 +6,8 @@ contract Notebook {
     address owner;
 
     //mappings for addresses with two levels of access
-    mapping (address => bool) readOnlyRegistry;
-    mapping (address => bool) fullAccessRegistry;
+    mapping (address => bool) public readOnlyRegistry;
+    mapping (address => bool) public fullAccessRegistry;
 
     function isReadOnlyUser(address _addr) constant returns (bool) {
         return readOnlyRegistry[_addr];
@@ -41,7 +41,7 @@ contract Notebook {
     }
 
     //add address eligible for read operations
-    function addReadOnlyUser(address _addr) fullAccess(msg.sender) {
+    function addReadOnlyUser(address _addr) {
 
         readOnlyRegistry[_addr] = true;
     }
@@ -73,11 +73,9 @@ contract Notebook {
     }
 
 
-
     //our list of notes
     bytes32[] notes;
 
-    
 
     //---------CRUD operations with notes----------
     

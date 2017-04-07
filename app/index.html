@@ -16,11 +16,12 @@
 <br><button class="btn btn-default" id="addNote" onclick="App.addNote()">Добавить запись</button>
 
 <p><h2>Открыть доступ для адреса:</h2></p>
-<div><input type="text" class="form-control" placeholder="Адрес сети Ethereum, например 0x93e66d9baea28c17d9fc393b53e3fbdd76899dae"></div><br>
+<div><input type="text" id="input_address" class="form-control" placeholder="Адрес сети Ethereum, например 0x93e66d9baea28c17d9fc393b53e3fbdd76899dae"></div><br>
 <form class="form-inline">
-    <button type="submit" class="btn btn-default">Разрешить чтение</button>
-    <button type="submit" class="btn btn-default">Разрешить чтение и изменение</button>
-    <button type="submit" class="btn btn-default">Проверить права адреса</button>
+    <button type="button" class="btn btn-default" onclick="App.grantReadOnly()">Разрешить чтение</button>
+    <button type="button" class="btn btn-default" onclick="App.grantFullAccess()">Разрешить чтение и изменение</button>
+    <button type="button" class="btn btn-default" onclick="App.checkUserStatus()">Проверить права адреса</button>
+    <h5 id="check_status"></h5>
 </form>
 
 

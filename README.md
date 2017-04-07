@@ -8,7 +8,7 @@ Installation requirements:
 
 Installation:
 
-For testing on a local simulation:
+First, connect to a blockchain network. For testing on a local simulation:
 
 ```
 ~ $ testrpc
@@ -23,6 +23,7 @@ or for deploying to Ethereum testnet (in case of go-ethereum client):
 then navigate to project folder and run:
 
 ```
+~ $ npm install
 ~ $ truffle compile
 ~ $ truffle migrate --reset
 ~ $ npm run dev

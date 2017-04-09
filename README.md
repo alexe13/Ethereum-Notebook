@@ -1,8 +1,10 @@
 Distributed application for saving, editing and deleting notes stored in Ethereum blockchain. Allows to grant rights to read or  edit your notes to third-party Ethereum addresses.
 
+Built using Truffle Framework, HTML/CSS/JS (frontend) + Solidity (Smart contracts).
+
 Installation requirements:
 
-- Node.js
+- Node.js 5.0+
 - Truffle Framework
 - testrpc or any Ethereum client
 

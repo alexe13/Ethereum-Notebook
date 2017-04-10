@@ -78,7 +78,7 @@ contract Notebook {
 
 
     //our list of notes
-    //string is a dynamic array and supports UTF-8 encoding but
+    //string is a dynamic array and supports UTF-8 encoding but has higher gas cost
     string[] notes;
 
     

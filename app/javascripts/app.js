@@ -29,12 +29,17 @@ window.App = {
       accounts = accs;
       account = accounts[0];
 
+      self.getCurrentAddress(account);
       self.refreshNotes();
     });
   },
 
+   getCurrentAddress: function (acc) {
+     var addr = document.getElementById("own_address");
+     addr.innerText = acc.valueOf();
+   },
+
    showNotes: function(message) {
-     console.log('show notes: ' + message);
      var self = this;
      var status = document.getElementById("status");
     if (message[0] === "" || message.length == 0) {
@@ -43,7 +48,6 @@ window.App = {
     else
      {
        status.innerHTML = "";
-       var texts = [];
 
        for (var i = 0; i < message.length; i++) {
          console.log('appending html on index ' + i);
@@ -52,30 +56,35 @@ window.App = {
      }
   },
 
-  refreshNotes : function() {
-    var self = this;
-    Notebook.deployed()
-      .then(function(instance) {
-        console.log(`---------- getNotes() ----------`);
-        return instance.getAllNotes()
-      })
-      .then(function(data) {
-        console.log('raw data:' + data);
-        var values = String(data).split(',');
-        var tableRows = [];
+  getNumberOfNotes : function() {
+    return Notebook.deployed().then(function (instance) {
+      return instance.getNumberOfNotes()
+        .then(data => {
+          console.log("number of notes: " + data.toLocaleString());
+          return data.valueOf();
+        })
+    })
+  },
 
-        for (var i = 0; i < values.length; i++) {
-          tableRows.push(web3.toAscii(values[i]));
+  refreshNotes : function() {
+    return this.getNumberOfNotes()
+      .then(numberOfNotes => {
+        let promises = [];
+        for (let i = 0; i < numberOfNotes; i++) {
+          promises.push(Notebook.deployed().then(function (instance) {
+            return instance.getNote(i, {from:account});
+          }))
         }
-        self.showNotes(
-          tableRows
-        );
+        Promise.all(promises).then(promises => {
+          App.showNotes(promises);
+        })
       })
   },
 
    addNote : function() {
     var self = this;
     var text = document.getElementById("note_text").value;
+    var status = document.getElementById("check_status");
 
     Notebook.deployed().then(function(instance) {
     return instance.addNote(text, {from:account});
@@ -83,6 +92,7 @@ window.App = {
     self.refreshNotes();
     }).catch(function (e) {
       console.log(e);
+      status.innerText = "Out of gas error!";
      });
   },
 

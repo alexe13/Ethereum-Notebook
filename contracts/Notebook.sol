@@ -6,8 +6,8 @@ contract Notebook {
     address owner;
 
     //mappings for addresses with two levels of access
-    mapping (address => bool) public readOnlyRegistry;
-    mapping (address => bool) public fullAccessRegistry;
+    mapping (address => bool) readOnlyRegistry;
+    mapping (address => bool) fullAccessRegistry;
 
     function isReadOnlyUser(address _addr) constant returns (bool) {
         return readOnlyRegistry[_addr];
@@ -41,7 +41,7 @@ contract Notebook {
     }
 
     //add address eligible for read operations
-    function addReadOnlyUser(address _addr) {
+    function addReadOnlyUser(address _addr) fullAccess(msg.sender) {
 
         readOnlyRegistry[_addr] = true;
     }
@@ -62,6 +62,9 @@ contract Notebook {
         else if (isReadOnlyUser(_addr)) {
             return "Read Only";
         }
+        else if (_addr == owner) {
+            return "It's you!";
+        }
         else return "This user has no access";
 
     }
@@ -73,9 +76,12 @@ contract Notebook {
     }
 
 
-    //our list of notes
-    bytes32[] notes;
 
+    //our list of notes
+    //string is a dynamic array and supports UTF-8 encoding but
+    string[] notes;
+
+    
 
     //---------CRUD operations with notes----------
     
@@ -83,7 +89,7 @@ contract Notebook {
         return notes.length;
     }
 
-    function addNote(bytes32 text) fullAccess(msg.sender) returns (bool success)  {
+    function addNote(string text) fullAccess(msg.sender) returns (bool success)  {
         notes.push(text);
         return true;
     }
@@ -102,15 +108,15 @@ contract Notebook {
         if (notes.length < 0) notes.length = 0;
     }
 
-    function editNote(uint index, bytes32 text) fullAccess(msg.sender) returns (bool success) {
+    function editNote(uint index, string text) fullAccess(msg.sender) returns (bool success) {
         if (index < 0 || index >= notes.length) return false;
 
         notes[index] = text;
         return true;
     }
 
-    function getAllNotes() readOnly(msg.sender) constant returns(bytes32[]) {
-        return notes;
+    function getNote(uint index) readOnly(msg.sender) constant returns(string) {
+        return notes[index];
   }
 
 }
